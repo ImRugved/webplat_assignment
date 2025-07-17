@@ -1,14 +1,14 @@
-# Webplat Assignment - User Directory App
+# Webplat Assignment - Object Directory App
 
-A modern Flutter application that fetches and displays user data from a public API with advanced search functionality, responsive design, and a unified design system.
+A modern Flutter application that fetches and displays object data from the [Restful API](https://api.restful-api.dev/objects) with advanced search functionality, responsive design, and a unified design system.
 
 ## 📱 Features
 
 ### Core Functionality
 
-- **User List Display**: Shows users with name, username, email, and phone information
-- **User Details Screen**: Detailed view of all user information with beautiful UI
-- **Real-time Search**: Search through users by name, email
+- **Object List Display**: Shows objects with name, ID, and detailed properties
+- **Object Details Screen**: Detailed view of all object information with beautiful UI
+- **Real-time Search**: Search through objects by name, color, capacity, price, and other properties
 - **Recent Searches**: Track and display the last 10 search terms
 - **Responsive Design**: Optimized for both mobile and tablet screens
 - **Pull-to-Refresh**: Refresh data by pulling down the list
@@ -16,8 +16,8 @@ A modern Flutter application that fetches and displays user data from a public A
 
 ### Search Features
 
-- **Smart Search**: Searches across multiple fields (name, username, email)
-- **Debounced Input**: Only adds completed searches to recent searches (1.5s delay)
+- **Smart Search**: Searches across multiple fields (name, color, capacity, price, generation, etc.)
+- **Debounced Input**: Only adds completed searches to recent searches (1-second delay)
 - **Quick Access**: Tap on recent search chips to quickly search again
 - **Clear Functionality**: Clear individual searches or all recent searches
 - **Persistent Storage**: Recent searches are saved locally and persist between app sessions
@@ -39,32 +39,31 @@ A modern Flutter application that fetches and displays user data from a public A
 ```
 lib/
 ├── model/
-│   └── user_model.dart          # Data models (User, Address, Company, Geo)
+│   └── object_model.dart         # Data models (ObjectItem with dynamic data)
 ├── provider/
-│   └── user_provider.dart       # State management with Provider
+│   └── object_provider.dart      # State management with Provider
 ├── view/
-│   ├── splash_screen.dart       # Animated splash screen
-│   ├── user_list_screen.dart    # Main user list screen
-│   └── user_details_screen.dart # Detailed user information screen
+│   ├── splash_screen.dart        # Animated splash screen
+│   ├── object_list_screen.dart   # Main object list screen
+│   └── object_details_screen.dart # Detailed object information screen
 ├── global/
-│   ├── global.dart              # Global constants and configurations
-│   ├── colors.dart              # App color constants
-│   └── text_styles.dart         # App text style constants
-└── main.dart                    # App entry point
+│   ├── global.dart               # Global constants and configurations
+│   ├── colors.dart               # App color constants
+│   └── text_styles.dart          # App text style constants
+└── main.dart                     # App entry point
 ```
 
 ### Model Layer
 
-- **User Model**: Complete user data structure
-- **Address Model**: User address information
-- **Company Model**: Company details
-- **Geo Model**: Geographic coordinates
+- **ObjectItem Model**: Flexible object data structure with dynamic properties
+- **Helper Methods**: Extract common fields like color, capacity, price, generation, etc.
+- **Formatted Data**: Smart formatting for display purposes
 
 ### Provider Layer
 
-- **UserProvider**: Manages application state
-  - User data fetching and caching
-  - Search functionality
+- **ObjectProvider**: Manages application state
+  - Object data fetching and caching
+  - Search functionality across object properties
   - Recent searches management
   - Loading and error states
 
@@ -74,14 +73,14 @@ lib/
   - Beautiful gradient background
   - Animated logo and text
   - Smooth transition to main app
-- **UserListScreen**: Main application screen
+- **ObjectListScreen**: Main application screen
   - Responsive design using MediaQuery
   - Search bar with real-time filtering
   - Recent searches display
-  - User cards with contact information
-- **UserDetailsScreen**: Detailed user information
-  - Comprehensive user data display
-  - Organized sections (Personal, Contact, Address, Company)
+  - Object cards with key information
+- **ObjectDetailsScreen**: Detailed object information
+  - Comprehensive object data display
+  - Organized sections (Basic Info, Detailed Info)
   - Responsive design for all screen sizes
 
 ### Global Layer
@@ -104,7 +103,7 @@ lib/
 ### Endpoint
 
 ```
-GET https://jsonplaceholder.typicode.com/users
+GET https://api.restful-api.dev/objects
 ```
 
 ### Response Structure
@@ -112,36 +111,45 @@ GET https://jsonplaceholder.typicode.com/users
 ```json
 [
   {
-    "id": 1,
-    "name": "Leanne Graham",
-    "username": "Bret",
-    "email": "Sincere@april.biz",
-    "address": {
-      "street": "Kulas Light",
-      "suite": "Apt. 556",
-      "city": "Gwenborough",
-      "zipcode": "92998-3874",
-      "geo": {
-        "lat": "-37.3159",
-        "lng": "81.1496"
-      }
-    },
-    "phone": "1-770-736-8031 x56442",
-    "website": "hildegard.org",
-    "company": {
-      "name": "Romaguera-Crona",
-      "catchPhrase": "Multi-layered client-server neural-net",
-      "bs": "harness real-time e-markets"
+    "id": "1",
+    "name": "Google Pixel 6 Pro",
+    "data": {
+      "color": "Cloudy White",
+      "capacity": "128 GB"
+    }
+  },
+  {
+    "id": "2",
+    "name": "Apple iPhone 12 Mini, 256GB, Blue",
+    "data": null
+  },
+  {
+    "id": "3",
+    "name": "Apple iPhone 12 Pro Max",
+    "data": {
+      "color": "Cloudy White",
+      "capacity GB": 512
     }
   }
 ]
 ```
+
+### Supported Object Types
+
+The API provides various types of objects including:
+
+- **Smartphones**: Google Pixel, Apple iPhone, Samsung Galaxy
+- **Laptops**: Apple MacBook Pro
+- **Wearables**: Apple Watch
+- **Audio Devices**: Apple AirPods, Beats Studio
+- **Tablets**: Apple iPad Mini, Apple iPad Air
 
 ### API Features
 
 - **Public API**: No authentication required
 - **CORS Enabled**: Works with web applications
 - **JSON Response**: Structured data format
+- **Dynamic Data**: Flexible object properties
 - **Error Handling**: Proper HTTP status codes
 
 ## 🚀 Getting Started
@@ -168,7 +176,7 @@ GET https://jsonplaceholder.typicode.com/users
 
    ```bash
    git clone <repository-url>
-   cd webplat_demo
+   cd webplat_assignment
    ```
 
 2. **Install Dependencies**
@@ -198,7 +206,7 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  http: ^1.4.0 # API HTTP requests
+  dio: ^5.4.0 # API HTTP requests
   provider: ^6.1.5 # State management
   shimmer: ^3.0.0 # Loading animations
   shared_preferences: ^2.2.2 # Local data persistence
@@ -228,14 +236,14 @@ dev_dependencies:
 - **Typography System**: Consistent text styles in `lib/global/text_styles.dart`
   - Heading styles (h1, h2, h3)
   - Body text styles (large, medium, small)
-  - Specialized styles (button, chip, search hint, splash, user card, detail labels/values)
+  - Specialized styles (button, chip, search hint, splash, object card, detail labels/values)
 
 ### Splash Screen
 
 - **Animated Welcome**: Beautiful gradient background with app branding
 - **Smooth Animations**: Scale and fade animations for logo and text
 - **Loading Indicator**: Circular progress indicator with branded colors
-- **Auto Navigation**: Automatically transitions to main app after 3 seconds
+- **Auto Navigation**: Automatically transitions to main app after 2 seconds
 
 ### Search Bar
 
@@ -245,24 +253,26 @@ dev_dependencies:
 - **Keyboard management** with auto-dismiss
 - **Branded styling** using design system colors
 
-### User Cards
+### Object Cards
 
-- **Avatar** with user's first initial
-- **Contact information** (name, username, email, phone)
+- **Avatar** with object's first initial
+- **Object information** (name, ID, formatted data)
+- **Price display** when available
 - **Shadow effects** for depth
 - **Responsive sizing** based on screen size
-- **Tap to navigate** to detailed user information
+- **Tap to navigate** to detailed object information
 - **Arrow indicator** showing the card is tappable
 - **Consistent styling** using design system colors and typography
 
-### User Details Screen
+### Object Details Screen
 
-- **Comprehensive information** display with all user data
-- **Organized sections** (Personal, Contact, Address, Company)
-- **Beautiful header** with large avatar and user info
+- **Comprehensive information** display with all object data
+- **Organized sections** (Basic Info, Detailed Info)
+- **Beautiful header** with large avatar and object info
 - **Responsive design** for mobile and tablet
 - **Smooth animations** when navigating back
 - **Section cards** with consistent styling and colors
+- **Dynamic field display** - only shows available properties
 
 ### Recent Searches
 
@@ -277,13 +287,13 @@ dev_dependencies:
 ### App Constants (`lib/global/global.dart`)
 
 - **API Configuration**:
-  - Base URL: `https://jsonplaceholder.typicode.com`
-  - Endpoint: `/users`
-  - Search debounce time: 1.5 seconds
+  - Base URL: `https://api.restful-api.dev`
+  - Endpoint: `/objects`
+  - Search debounce time: 1 second
 - **App Metadata**:
   - App Name: "Webplat Assignment"
   - App Version: "1.0.0"
-  - Splash duration: 3 seconds
+  - Splash duration: 2 seconds
 - **Responsive Design**:
   - Tablet breakpoint: 600px
   - Mobile: Screen width ≤ 600px
@@ -305,7 +315,7 @@ dev_dependencies:
 
 ### Search Configuration
 
-- **Debouncing**: 1.5 seconds of no typing
+- **Debouncing**: 1 second of no typing
 - **Purpose**: Prevents adding partial searches to recent searches
 - **Recent Searches**:
   - Maximum: 10 searches
@@ -317,15 +327,15 @@ dev_dependencies:
 ### Manual Testing Checklist
 
 - [ ] App launches with splash screen animation
-- [ ] Splash screen transitions to user list after 3 seconds
-- [ ] User data loads and displays correctly
-- [ ] Search functionality works across all fields
+- [ ] Splash screen transitions to object list after 2 seconds
+- [ ] Object data loads and displays correctly
+- [ ] Search functionality works across all object properties
 - [ ] Recent searches are saved and displayed
 - [ ] Responsive design works on different screen sizes
 - [ ] Pull-to-refresh updates data
 - [ ] Error states display properly
 - [ ] Loading states show shimmer effects
-- [ ] User details screen displays all information correctly
+- [ ] Object details screen displays all information correctly
 - [ ] Design system colors and typography are consistent throughout
 - [ ] Navigation animations work smoothly
 
@@ -333,19 +343,19 @@ dev_dependencies:
 
 ### Provider Pattern
 
-- **Single Source of Truth**: All state managed in UserProvider
+- **Single Source of Truth**: All state managed in ObjectProvider
 - **Reactive Updates**: UI automatically updates when state changes
 - **Separation of Concerns**: Business logic separated from UI
 
 ### State Variables
 
 ```dart
-List<User> users = [];              // All users from API
-List<User> filteredUsers = [];      // Filtered users based on search
-List<String> recentSearches = [];   // Recent search terms
-bool isLoading = false;             // Loading state
-String error = '';                  // Error message
-String searchQuery = '';            // Current search query
+List<ObjectItem> objects = [];              // All objects from API
+List<ObjectItem> filteredObjects = [];      // Filtered objects based on search
+List<String> recentSearches = [];           // Recent search terms
+bool isLoading = false;                     // Loading state
+String error = '';                          // Error message
+String searchQuery = '';                    // Current search query
 ```
 
 ## 🚨 Error Handling
@@ -361,3 +371,51 @@ String searchQuery = '';            // Current search query
 - Clear error messages
 - Retry functionality
 - Loading indicators
+
+## 📊 Data Model
+
+### ObjectItem Structure
+
+```dart
+class ObjectItem {
+  final String id;
+  final String name;
+  final Map<String, dynamic>? data;
+
+  // Helper getters for common properties
+  String? get color;
+  String? get capacity;
+  String? get price;
+  String? get generation;
+  String? get year;
+  String? get cpuModel;
+  String? get hardDiskSize;
+  String? get caseSize;
+  String? get description;
+  String? get screenSize;
+
+  // Formatted data for display
+  String get formattedData;
+}
+```
+
+### Dynamic Data Handling
+
+The app intelligently handles the dynamic `data` field from the API:
+
+- **Null Safety**: Handles objects with no additional data
+- **Property Extraction**: Automatically extracts common properties
+- **Flexible Display**: Shows only available properties
+- **Search Integration**: Searches across all data properties
+
+## 🎯 Key Features Summary
+
+- ✅ **Modern Flutter App** with Material Design 3
+- ✅ **RESTful API Integration** with [api.restful-api.dev](https://api.restful-api.dev/objects)
+- ✅ **Advanced Search** across object properties
+- ✅ **Responsive Design** for mobile and tablet
+- ✅ **State Management** with Provider pattern
+- ✅ **Local Storage** for recent searches
+- ✅ **Error Handling** and loading states
+- ✅ **Smooth Animations** and transitions
+- ✅ **Clean Architecture** with separation of concerns
