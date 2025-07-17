@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'provider/user_provider.dart';
+import 'provider/object_provider.dart';
 import 'view/splash_screen.dart';
 
 void main() {
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => UserProvider(),
+      create: (context) => ObjectProvider(),
       child: MaterialApp(
         title: 'Webplat',
         debugShowCheckedModeBanner: false,

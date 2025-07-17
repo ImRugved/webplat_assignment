@@ -2,21 +2,21 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
-import '../provider/user_provider.dart';
-import '../model/user_model.dart';
+import '../provider/object_provider.dart';
+import '../model/object_model.dart';
 import '../global/global.dart';
 import '../global/colors.dart';
 import '../global/text_styles.dart';
-import 'user_details_screen.dart';
+import 'object_details_screen.dart';
 
-class UserListScreen extends StatefulWidget {
-  const UserListScreen({super.key});
+class ObjectListScreen extends StatefulWidget {
+  const ObjectListScreen({super.key});
 
   @override
-  State<UserListScreen> createState() => _UserListScreenState();
+  State<ObjectListScreen> createState() => _ObjectListScreenState();
 }
 
-class _UserListScreenState extends State<UserListScreen> {
+class _ObjectListScreenState extends State<ObjectListScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   Timer? _debounceTimer;
@@ -25,14 +25,14 @@ class _UserListScreenState extends State<UserListScreen> {
   void initState() {
     super.initState();
     _searchController.addListener(() {
-      context.read<UserProvider>().searchUsers(_searchController.text);
+      context.read<ObjectProvider>().searchObjects(_searchController.text);
 
       _debounceTimer?.cancel();
 
       if (_searchController.text.isNotEmpty) {
         _debounceTimer = Timer(Duration(milliseconds: 1000), () {
           if (mounted) {
-            context.read<UserProvider>().addToRecentSearches(
+            context.read<ObjectProvider>().addToRecentSearches(
               _searchController.text,
             );
           }
@@ -58,7 +58,7 @@ class _UserListScreenState extends State<UserListScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            'User Data',
+            'Object Data',
             style: AppTextStyles.heading3.copyWith(color: AppColors.splashText),
           ),
           backgroundColor: AppColors.primary,
@@ -70,21 +70,21 @@ class _UserListScreenState extends State<UserListScreen> {
             _buildSearchBar(),
             _buildRecentSearches(),
             Expanded(
-              child: Consumer<UserProvider>(
-                builder: (context, userProvider, child) {
-                  if (userProvider.isLoading) {
+              child: Consumer<ObjectProvider>(
+                builder: (context, objectProvider, child) {
+                  if (objectProvider.isLoading) {
                     return _buildShimmerList();
                   }
 
-                  if (userProvider.error.isNotEmpty) {
-                    return _buildErrorWidget(userProvider.error);
+                  if (objectProvider.error.isNotEmpty) {
+                    return _buildErrorWidget(objectProvider.error);
                   }
 
-                  if (userProvider.filteredUsers.isEmpty) {
+                  if (objectProvider.filteredObjects.isEmpty) {
                     return _buildEmptyState();
                   }
 
-                  return _buildUserList(userProvider.filteredUsers);
+                  return _buildObjectList(objectProvider.filteredObjects);
                 },
               ),
             ),
@@ -129,21 +129,21 @@ class _UserListScreenState extends State<UserListScreen> {
           focusNode: _searchFocusNode,
           onSubmitted: (value) {
             if (value.isNotEmpty) {
-              context.read<UserProvider>().addToRecentSearches(value);
+              context.read<ObjectProvider>().addToRecentSearches(value);
             }
           },
           decoration: InputDecoration(
             hintText: isTablet
-                ? 'Search users by name, email, company, or city...'
-                : 'Search users...',
+                ? 'Search objects by name, color, capacity, or price...'
+                : 'Search objects...',
             hintStyle: AppTextStyles.searchHint,
             prefixIcon: const Icon(
               Icons.search,
               color: AppColors.textSecondary,
             ),
-            suffixIcon: Consumer<UserProvider>(
-              builder: (context, userProvider, child) {
-                return userProvider.searchQuery.isNotEmpty
+            suffixIcon: Consumer<ObjectProvider>(
+              builder: (context, objectProvider, child) {
+                return objectProvider.searchQuery.isNotEmpty
                     ? IconButton(
                         icon: const Icon(
                           Icons.clear,
@@ -151,7 +151,7 @@ class _UserListScreenState extends State<UserListScreen> {
                         ),
                         onPressed: () {
                           _searchController.clear();
-                          userProvider.clearSearch();
+                          objectProvider.clearSearch();
                         },
                       )
                     : const SizedBox.shrink();
@@ -172,9 +172,9 @@ class _UserListScreenState extends State<UserListScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
     final isTablet = screenWidth > 600;
 
-    return Consumer<UserProvider>(
-      builder: (context, userProvider, child) {
-        if (userProvider.recentSearches.isEmpty) {
+    return Consumer<ObjectProvider>(
+      builder: (context, objectProvider, child) {
+        if (objectProvider.recentSearches.isEmpty) {
           return const SizedBox.shrink();
         }
 
@@ -197,7 +197,7 @@ class _UserListScreenState extends State<UserListScreen> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () => userProvider.clearRecentSearches(),
+                    onPressed: () => objectProvider.clearRecentSearches(),
                     child: Text(
                       'Clear All',
                       style: AppTextStyles.bodyMedium.copyWith(
@@ -212,11 +212,11 @@ class _UserListScreenState extends State<UserListScreen> {
               Wrap(
                 spacing: isTablet ? 12 : 8,
                 runSpacing: isTablet ? 8 : 4,
-                children: userProvider.recentSearches.map((search) {
+                children: objectProvider.recentSearches.map((search) {
                   return GestureDetector(
                     onTap: () {
                       _searchController.text = search;
-                      userProvider.selectRecentSearch(search);
+                      objectProvider.selectRecentSearch(search);
                     },
                     child: Chip(
                       label: Text(
@@ -226,7 +226,8 @@ class _UserListScreenState extends State<UserListScreen> {
                         ),
                       ),
                       deleteIcon: Icon(Icons.close, size: isTablet ? 18 : 16),
-                      onDeleted: () => userProvider.removeRecentSearch(search),
+                      onDeleted: () =>
+                          objectProvider.removeRecentSearch(search),
                       backgroundColor: AppColors.chipBackground,
                       side: BorderSide(color: AppColors.primaryLight),
                     ),
@@ -292,7 +293,7 @@ class _UserListScreenState extends State<UserListScreen> {
             ),
             SizedBox(height: isTablet ? 20 : 16),
             ElevatedButton(
-              onPressed: () => context.read<UserProvider>().refreshData(),
+              onPressed: () => context.read<ObjectProvider>().refreshData(),
               child: Text(
                 'Retry',
                 style: AppTextStyles.button.copyWith(
@@ -324,7 +325,7 @@ class _UserListScreenState extends State<UserListScreen> {
             ),
             SizedBox(height: isTablet ? 20 : 16),
             Text(
-              'No users found',
+              'No objects found',
               style: AppTextStyles.heading2.copyWith(
                 fontSize: isTablet ? 28 : 24,
                 color: AppColors.textSecondary,
@@ -336,24 +337,24 @@ class _UserListScreenState extends State<UserListScreen> {
     );
   }
 
-  Widget _buildUserList(List<User> users) {
+  Widget _buildObjectList(List<ObjectItem> objects) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isTablet = screenWidth > 600;
 
     return RefreshIndicator(
-      onRefresh: () => context.read<UserProvider>().refreshData(),
+      onRefresh: () => context.read<ObjectProvider>().refreshData(),
       child: ListView.builder(
         padding: EdgeInsets.all(isTablet ? 24 : 16),
-        itemCount: users.length,
+        itemCount: objects.length,
         itemBuilder: (context, index) {
-          final user = users[index];
-          return _buildUserCard(user);
+          final object = objects[index];
+          return _buildObjectCard(object);
         },
       ),
     );
   }
 
-  Widget _buildUserCard(User user) {
+  Widget _buildObjectCard(ObjectItem object) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isTablet = screenWidth > 600;
 
@@ -362,7 +363,7 @@ class _UserListScreenState extends State<UserListScreen> {
         Navigator.of(context).push(
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) =>
-                UserDetailsScreen(user: user),
+                ObjectDetailsScreen(object: object),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
                   const begin = Offset(1.0, 0.0);
@@ -409,7 +410,7 @@ class _UserListScreenState extends State<UserListScreen> {
                     radius: isTablet ? 30 : 25,
                     backgroundColor: AppColors.primaryLight,
                     child: Text(
-                      user.name[0].toUpperCase(),
+                      object.name[0].toUpperCase(),
                       style: AppTextStyles.heading3.copyWith(
                         fontSize: isTablet ? 24 : 20,
                         color: AppColors.primaryDark,
@@ -422,13 +423,13 @@ class _UserListScreenState extends State<UserListScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          user.name,
+                          object.name,
                           style: AppTextStyles.userCardTitle.copyWith(
                             fontSize: isTablet ? 18 : 14,
                           ),
                         ),
                         Text(
-                          '${user.username}',
+                          'ID: ${object.id}',
                           style: AppTextStyles.userCardSubtitle.copyWith(
                             fontSize: isTablet ? 16 : 14,
                           ),
@@ -444,9 +445,11 @@ class _UserListScreenState extends State<UserListScreen> {
                 ],
               ),
               SizedBox(height: isTablet ? 16 : 12),
-              _buildInfoRow(Icons.email, user.email),
-              SizedBox(height: isTablet ? 12 : 8),
-              _buildInfoRow(Icons.phone, user.phone),
+              _buildInfoRow(Icons.info, object.formattedData),
+              if (object.price != null) ...[
+                SizedBox(height: isTablet ? 12 : 8),
+                _buildInfoRow(Icons.attach_money, 'Price: \$${object.price}'),
+              ],
             ],
           ),
         ),

@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../provider/user_provider.dart';
+import '../provider/object_provider.dart';
 import '../global/global.dart';
 import '../global/colors.dart';
 import '../global/text_styles.dart';
-import 'user_list_screen.dart';
+import 'object_list_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -53,15 +53,15 @@ class _SplashScreenState extends State<SplashScreen>
 
   void _startSplashTimer() {
     Timer(Duration(seconds: 2), () {
-      _navigateToUserList();
+      _navigateToObjectList();
     });
   }
 
-  void _navigateToUserList() {
+  void _navigateToObjectList() {
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
-            const UserListScreen(),
+            const ObjectListScreen(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           const begin = Offset(0.0, 1.0);
           const end = Offset.zero;
@@ -151,7 +151,7 @@ class _SplashScreenState extends State<SplashScreen>
                     FadeTransition(
                       opacity: _fadeAnimation,
                       child: Text(
-                        'Discover and connect with users',
+                        'Discover and connect with objects',
                         style: AppTextStyles.splashSubtitle.copyWith(
                           fontSize: isTablet ? 18 : 16,
                           fontWeight: FontWeight.w300,

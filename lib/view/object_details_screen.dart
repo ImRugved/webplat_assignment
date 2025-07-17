@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import '../model/user_model.dart';
+import '../model/object_model.dart';
 import '../global/colors.dart';
 import '../global/text_styles.dart';
 
-class UserDetailsScreen extends StatelessWidget {
-  final User user;
+class ObjectDetailsScreen extends StatelessWidget {
+  final ObjectItem object;
 
-  const UserDetailsScreen({super.key, required this.user});
+  const ObjectDetailsScreen({super.key, required this.object});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class UserDetailsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'User Details',
+          'Object Details',
           style: AppTextStyles.heading3.copyWith(
             color: AppColors.splashText,
             fontSize: isTablet ? 22 : 20,
@@ -33,10 +33,8 @@ class UserDetailsScreen extends StatelessWidget {
         child: Column(
           children: [
             _buildHeader(context),
-            _buildPersonalInfo(context),
-            _buildContactInfo(context),
-            _buildAddressInfo(context),
-            _buildCompanyInfo(context),
+            _buildBasicInfo(context),
+            if (object.data != null) _buildDetailedInfo(context),
             const SizedBox(height: 20),
           ],
         ),
@@ -65,7 +63,7 @@ class UserDetailsScreen extends StatelessWidget {
               radius: isTablet ? 50 : 40,
               backgroundColor: AppColors.surface,
               child: Text(
-                user.name[0].toUpperCase(),
+                object.name[0].toUpperCase(),
                 style: AppTextStyles.heading1.copyWith(
                   fontSize: isTablet ? 36 : 30,
                   color: AppColors.primaryDark,
@@ -74,20 +72,12 @@ class UserDetailsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              user.name,
+              object.name,
               style: AppTextStyles.heading1.copyWith(
                 fontSize: isTablet ? 28 : 24,
                 color: AppColors.splashText,
               ),
               textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '${user.username}',
-              style: AppTextStyles.bodyLarge.copyWith(
-                fontSize: isTablet ? 18 : 16,
-                color: AppColors.splashText,
-              ),
             ),
             const SizedBox(height: 8),
             Container(
@@ -97,7 +87,7 @@ class UserDetailsScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                'ID: ${user.id}',
+                'ID: ${object.id}',
                 style: AppTextStyles.bodyMedium.copyWith(
                   color: AppColors.splashText,
                   fontWeight: FontWeight.w500,
@@ -110,98 +100,83 @@ class UserDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPersonalInfo(BuildContext context) {
+  Widget _buildBasicInfo(BuildContext context) {
     return _buildSection(
-      title: 'Personal Information',
-      icon: Icons.person,
+      title: 'Basic Information',
+      icon: Icons.info,
       context: context,
       children: [
-        _buildInfoTile('Full Name', user.name, Icons.person_outline, context),
+        _buildInfoTile('Object Name', object.name, Icons.label, context),
+        _buildInfoTile('Object ID', object.id, Icons.fingerprint, context),
         _buildInfoTile(
-          'Username',
-          '@${user.username}',
-          Icons.alternate_email,
-          context,
-        ),
-        _buildInfoTile('Email', user.email, Icons.email, context),
-        _buildInfoTile('Phone', user.phone, Icons.phone, context),
-        _buildInfoTile('Website', user.website, Icons.language, context),
-      ],
-    );
-  }
-
-  Widget _buildContactInfo(BuildContext context) {
-    return _buildSection(
-      title: 'Contact Information',
-      icon: Icons.contact_mail,
-      context: context,
-      children: [
-        _buildInfoTile('Email', user.email, Icons.email_outlined, context),
-        _buildInfoTile('Phone', user.phone, Icons.phone_outlined, context),
-        _buildInfoTile(
-          'Website',
-          user.website,
-          Icons.language_outlined,
+          'Data Available',
+          object.data != null ? 'Yes' : 'No',
+          Icons.data_usage,
           context,
         ),
       ],
     );
   }
 
-  Widget _buildAddressInfo(BuildContext context) {
-    return _buildSection(
-      title: 'Address Information',
-      icon: Icons.location_on,
-      context: context,
-      children: [
-        _buildInfoTile(
-          'Street',
-          user.address.street,
-          Icons.streetview,
-          context,
-        ),
-        _buildInfoTile('Suite', user.address.suite, Icons.home, context),
-        _buildInfoTile('City', user.address.city, Icons.location_city, context),
-        _buildInfoTile(
-          'Zip Code',
-          user.address.zipcode,
-          Icons.pin_drop,
-          context,
-        ),
-        _buildInfoTile(
-          'Coordinates',
-          '${user.address.geo.lat}, ${user.address.geo.lng}',
-          Icons.map,
-          context,
-        ),
-      ],
-    );
-  }
+  Widget _buildDetailedInfo(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isTablet = screenWidth > 600;
 
-  Widget _buildCompanyInfo(BuildContext context) {
     return _buildSection(
-      title: 'Company Information',
-      icon: Icons.business,
+      title: 'Detailed Information',
+      icon: Icons.details,
       context: context,
       children: [
-        _buildInfoTile(
-          'Company Name',
-          user.company.name,
-          Icons.business_outlined,
-          context,
-        ),
-        _buildInfoTile(
-          'Catch Phrase',
-          user.company.catchPhrase,
-          Icons.format_quote,
-          context,
-        ),
-        _buildInfoTile(
-          'Business',
-          user.company.bs,
-          Icons.work_outline,
-          context,
-        ),
+        if (object.color != null)
+          _buildInfoTile('Color', object.color!, Icons.palette, context),
+        if (object.capacity != null)
+          _buildInfoTile('Capacity', object.capacity!, Icons.storage, context),
+        if (object.price != null)
+          _buildInfoTile(
+            'Price',
+            '\$${object.price}',
+            Icons.attach_money,
+            context,
+          ),
+        if (object.generation != null)
+          _buildInfoTile(
+            'Generation',
+            object.generation!,
+            Icons.update,
+            context,
+          ),
+        if (object.year != null)
+          _buildInfoTile('Year', object.year!, Icons.calendar_today, context),
+        if (object.cpuModel != null)
+          _buildInfoTile('CPU Model', object.cpuModel!, Icons.memory, context),
+        if (object.hardDiskSize != null)
+          _buildInfoTile(
+            'Storage',
+            object.hardDiskSize!,
+            Icons.storage,
+            context,
+          ),
+        if (object.caseSize != null)
+          _buildInfoTile(
+            'Case Size',
+            object.caseSize!,
+            Icons.straighten,
+            context,
+          ),
+        if (object.description != null)
+          _buildInfoTile(
+            'Description',
+            object.description!,
+            Icons.description,
+            context,
+          ),
+        if (object.screenSize != null)
+          _buildInfoTile(
+            'Screen Size',
+            '${object.screenSize}"',
+            Icons.screen_rotation,
+            context,
+          ),
       ],
     );
   }

@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webplat_assignment/global/global.dart';
-import '../model/user_model.dart';
+import '../model/object_model.dart';
 
-class UserProvider extends ChangeNotifier {
-  List<User> users = [];
-  List<User> filteredUsers = [];
+class ObjectProvider extends ChangeNotifier {
+  List<ObjectItem> objects = [];
+  List<ObjectItem> filteredObjects = [];
   List<String> recentSearches = [];
   bool isLoading = false;
   String error = '';
@@ -17,53 +17,54 @@ class UserProvider extends ChangeNotifier {
 
   static const String _recentSearchesKey = Global.sharedPreferencesKey;
 
-  UserProvider() {
-    fetchUsers();
+  ObjectProvider() {
+    fetchObjects();
     _loadRecentSearches();
   }
 
-  Future<void> fetchUsers() async {
+  Future<void> fetchObjects() async {
     isLoading = true;
     error = '';
     notifyListeners();
 
     await Future.delayed(const Duration(seconds: 1));
-    log('host url: ${Global.hostUrl + Global.userList}');
+    log('host url: ${Global.hostUrl + Global.objectsList}');
 
     try {
       final dio = Dio();
 
-      final response = await dio.get(
-        'https://jsonplaceholder.typicode.com/users',
-      );
+      final response = await dio.get('https://api.restful-api.dev/objects');
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = response.data;
-        users = jsonData.map((json) => User.fromJson(json)).toList();
-        filteredUsers = List.from(users);
+        objects = jsonData.map((json) => ObjectItem.fromJson(json)).toList();
+        filteredObjects = List.from(objects);
         error = '';
       } else {
-        log('Failed to load users. Status code: ${response.statusCode}');
-        error = 'Failed to load users. Status code: ${response.statusCode}';
+        log('Failed to load objects. Status code: ${response.statusCode}');
+        error = 'Failed to load objects. Status code: ${response.statusCode}';
       }
     } catch (e) {
       log('Dio Exception: $e');
-      error = 'Error fetching users: $e';
+      error = 'Error fetching objects: $e';
     } finally {
       isLoading = false;
       notifyListeners();
     }
   }
 
-  void searchUsers(String query) {
+  void searchObjects(String query) {
     searchQuery = query;
 
     if (query.isEmpty) {
-      filteredUsers = users.toList();
+      filteredObjects = objects.toList();
     } else {
-      filteredUsers = users.where((user) {
-        return user.name.toLowerCase().contains(query.toLowerCase()) ||
-            user.username.toLowerCase().contains(query.toLowerCase());
+      filteredObjects = objects.where((object) {
+        return object.name.toLowerCase().contains(query.toLowerCase()) ||
+            (object.data != null &&
+                object.formattedData.toLowerCase().contains(
+                  query.toLowerCase(),
+                ));
       }).toList();
     }
 
@@ -105,7 +106,7 @@ class UserProvider extends ChangeNotifier {
 
   void clearSearch() {
     searchQuery = '';
-    filteredUsers = users.toList();
+    filteredObjects = objects.toList();
     notifyListeners();
   }
 
@@ -122,11 +123,11 @@ class UserProvider extends ChangeNotifier {
   }
 
   void selectRecentSearch(String search) {
-    searchUsers(search);
+    searchObjects(search);
   }
 
   Future<void> refreshData() async {
     await Future.delayed(const Duration(seconds: 1));
-    await fetchUsers();
+    await fetchObjects();
   }
 }
